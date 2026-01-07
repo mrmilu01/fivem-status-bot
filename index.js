@@ -8,7 +8,7 @@ const client = new Client({
 const TOKEN = process.env.TOKEN;
 const FIVEM_IP = "51.195.252.112:30131";
 const CHANNEL_ID = "1457147404439519464";
-const MESSAGE_ID = "PUT_MESSAGE_ID_HERE"; // 👈 very important
+const MESSAGE_ID = "1458321223799935037"; // 👈 very important
 const REFRESH_INTERVAL = 3 * 1000; // 3 seconds
 
 async function getServerStatus() {
