@@ -2,25 +2,19 @@ const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const fetch = require("node-fetch");
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ]
+  intents: [GatewayIntentBits.Guilds]
 });
 
 const TOKEN = process.env.TOKEN;
 const FIVEM_IP = "51.195.252.112:30131";
 const CHANNEL_ID = "1457147404439519464";
-const REFRESH_INTERVAL = 10 * 1000; // 10 seconds
-
-let statusMessage = null;
+const MESSAGE_ID = "PUT_MESSAGE_ID_HERE"; // 👈 very important
+const REFRESH_INTERVAL = 3 * 1000; // 3 seconds
 
 async function getServerStatus() {
   try {
     const res = await fetch(`http://${FIVEM_IP}/players.json`);
     const players = await res.json();
-
     return { online: true, players: players.length };
   } catch {
     return { online: false, players: 0 };
@@ -29,7 +23,7 @@ async function getServerStatus() {
 
 async function updateStatus() {
   const channel = await client.channels.fetch(CHANNEL_ID);
-  if (!channel) return;
+  const message = await channel.messages.fetch(MESSAGE_ID);
 
   const status = await getServerStatus();
 
@@ -40,14 +34,10 @@ async function updateStatus() {
       { name: "Status", value: status.online ? "🟢 Online" : "🔴 Offline", inline: true },
       { name: "Players", value: `${status.players}`, inline: true }
     )
-    .setFooter({ text: "Auto refresh every 10 seconds" })
+    .setFooter({ text: "Real-time refresh every 3 seconds" })
     .setTimestamp();
 
-  if (!statusMessage) {
-    statusMessage = await channel.send({ embeds: [embed] });
-  } else {
-    await statusMessage.edit({ embeds: [embed] });
-  }
+  await message.edit({ embeds: [embed] });
 }
 
 client.once("ready", () => {
